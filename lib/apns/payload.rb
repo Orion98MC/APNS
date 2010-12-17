@@ -8,10 +8,11 @@ module APNS
         
     def initialize(device_token, message_string_or_hash)
       self.device = APNS::Device.new(device_token)
+      # Per Apple docs: Strip newlines and whitespace from payload before including in payload
       if message_string_or_hash.is_a?(String)
-        self.message = {:alert => message_string_or_hash}
+        self.message = {:alert => message_string_or_hash.strip}
       elsif message_string_or_hash.is_a?(Hash)
-        self.message = message_string_or_hash
+        self.message = message_string_or_hash.each_value { |val| val.strip! if val.respond_to? :strip! }
       else
         raise "Payload message needs to be either a hash or string"
       end

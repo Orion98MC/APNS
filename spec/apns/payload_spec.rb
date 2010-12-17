@@ -26,11 +26,22 @@ describe APNS::Payload do
     p.size.should == 256
     p.should be_valid
   end
+
+  it "should strip whitespace from payload string" do
+    p = payload("Hello iPhone  \n")
+    p.should be_valid
+    p.apn_message.should == { :aps => { :alert => 'Hello iPhone' } }
+  end
   
   describe '#packaged_message' do
     
     it "should return JSON with payload informations" do
       p = payload({:alert => 'Hello iPhone', :badge => 2, :custom => "custom-string"})
+      p.apn_message.should == { :aps => { :badge => 2, :alert => 'Hello iPhone' }, :custom => "custom-string" }
+    end
+
+    it "should return JSON with payload informations with whitespace stripped" do
+      p = payload({:alert => "Hello iPhone  \n", :badge => 2, :custom => "custom-string  \n"})
       p.apn_message.should == { :aps => { :badge => 2, :alert => 'Hello iPhone' }, :custom => "custom-string" }
     end
     
