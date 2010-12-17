@@ -6,6 +6,12 @@ module APNS
   class PemPathError < RuntimeError;end
   class PemFileError < RuntimeError;end
 
+  ## Host for push notification service
+  # production: gateway.push.apple.com
+  # development: gateway.sandbox.apple.com
+  ## Host for feedback service
+  # production: feedback.push.apple.com
+  # development: feedback.sandbox.apple.com
   @host = 'gateway.sandbox.push.apple.com'
   @port = 2195
   # openssl pkcs12 -in mycert.p12 -out client-cert.pem -nodes -clcerts
@@ -119,8 +125,7 @@ module APNS
     context.cert = OpenSSL::X509::Certificate.new(File.read(self.pem))
     context.key  = OpenSSL::PKey::RSA.new(File.read(self.pem), self.pass)
 
-    fhost = self.host.gsub!('gateway','feedback')
-    puts fhost
+    fhost = self.host.gsub('gateway','feedback')
     
     sock         = TCPSocket.new(fhost, 2196)
     ssl          = OpenSSL::SSL::SSLSocket.new(sock,context)
