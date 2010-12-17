@@ -14,6 +14,9 @@ module APNS
   # development: feedback.sandbox.apple.com
   @host = 'gateway.sandbox.push.apple.com'
   @port = 2195
+  
+  @feedback_port = 2196
+  
   # openssl pkcs12 -in mycert.p12 -out client-cert.pem -nodes -clcerts
   @pem = nil # this should be the path of the pem file not the contents
   @pass = nil
@@ -127,7 +130,7 @@ module APNS
 
     fhost = self.host.gsub('gateway','feedback')
     
-    sock         = TCPSocket.new(fhost, 2196)
+    sock         = TCPSocket.new(fhost, self.feedback_port)
     ssl          = OpenSSL::SSL::SSLSocket.new(sock,context)
     ssl.connect
 
