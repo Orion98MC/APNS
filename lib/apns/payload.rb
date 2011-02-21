@@ -5,6 +5,7 @@ module APNS
     
     APS_ROOT = :aps
     APS_KEYS = [:alert, :badge, :sound]
+    APS_MAX_SIZE = 256
         
     def initialize(device_token, message_string_or_hash)
       self.device = APNS::Device.new(device_token)
@@ -28,8 +29,8 @@ module APNS
     end
     
     def valid?
-      self.size <= 256
-    end    
+      self.size <= APS_MAX_SIZE
+    end
     
     def apn_message
       message_hash = message.dup
@@ -39,6 +40,12 @@ module APNS
       end
       apnm.merge!(message_hash)
       apnm
+    end
+    
+    def truncate_alert_message!
+      size_without_alert_message = self.size - self.message[:alert].size
+      truncate_message_to = APS_MAX_SIZE - size_without_alert_message
+      self.message[:alert] = self.message[:alert].truncate(truncate_message_to)
     end
     
   end
